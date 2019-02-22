@@ -1,13 +1,7 @@
-from elasticsearch import Elasticsearch
+from elasticsearch import Elasticsearch, TransportError
 from elasticsearch_dsl import Search
 
-def search(emotion_profile):
-    client = Elasticsearch()
-    s = Search(using=client, index="songs")
-    # specify match_all query and set size to max 100
-    s.query("match_all")
-    s = s[:100]
-
+def search_with_L2_norm(emotion_profile):
     params = {
                 "anger": emotion_profile['anger'],
                 "disgust": emotion_profile['disgust'],
@@ -21,11 +15,11 @@ def search(emotion_profile):
 
     # painless script for calculating sum of square error
     script_field = {
-        "language": "painless",
+        "lang": "painless",
         "source": """
             def sum_sq_err = 0; 
             for (entry in params.input.entrySet()) {
-                sum_sq_err += Math.pow(doc['emotion_profile'][entry.getKey()] - entry.getValue()),2)
+                sum_sq_err += Math.pow(ctx._source['emotion_profile'][entry.getKey()] - entry.getValue(),2)
             }
             return sum_sq_err
         """,
@@ -43,8 +37,17 @@ def search(emotion_profile):
         }
     }
 
-    s.sort(sort_field)
-    response = s.execute()
+    client = Elasticsearch()
+    s = Search(using=client, index="songs").sort(sort_field)
+    # specify match_all query and set size to max 100
+    s.query("match_all")
+    s = s[:100]
+
+    try:
+        response = s.execute()
+    except TransportError as e:
+        print(e.info)
+
     # print(response.hits.hits)
     for hit in response.hits.hits:
         profile = hit['_source']['emotion_profile']
@@ -54,4 +57,4 @@ def search(emotion_profile):
         print(sum_sq_err)
 
 
-search({"anger":40, "disgust": 20,"sadness": 10, "surprise": 90, "fear": 10, "trust": 40, "joy": 30, "anticipation": 10})
+# search_with_L2_norm({"anger":40, "disgust": 20,"sadness": 10, "surprise": 90, "fear": 10, "trust": 40, "joy": 30, "anticipation": 10})
