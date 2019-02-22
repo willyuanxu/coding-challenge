@@ -124,6 +124,7 @@ def load_data():
         doc['location'] = str(x_coord) + "," + str(y_coord)
         res = es.index(index="songs", doc_type="doc", id=id_counter, body=doc)
         id_counter += 1
+    print("data loaded")
 
 def test_response(input, response):
     # print(response.hits.hits)

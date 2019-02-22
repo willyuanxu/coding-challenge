@@ -36,7 +36,7 @@ def search_with_L2_norm(emotion_profile):
 
     try:
         response = s.execute()
-        test_response(emotion_profile, response)
+        return response
     except TransportError as e:
         print(e.info)
 
@@ -63,7 +63,6 @@ def search_with_geodistance(emotion_profile):
     s = s[:100]
     try:
         response = s.execute()
-        test_response(emotion_profile, response)
-
+        return response 
     except TransportError as e:
         print(e.info)
