@@ -67,7 +67,3 @@ def search_with_geodistance(emotion_profile):
 
     except TransportError as e:
         print(e.info)
-
-profile = {"anger":40, "disgust": 20,"sadness": 10, "surprise": 90, "fear": 10, "trust": 40, "joy": 30, "anticipation": 10}
-# search_with_L2_norm(profile)
-search_with_geodistance(profile)

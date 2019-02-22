@@ -134,6 +134,5 @@ def test_response(input, response):
             sum_sq_err += (input[key] - profile[key]) ** 2
         print(sum_sq_err)
 
-load_data()
 
 
