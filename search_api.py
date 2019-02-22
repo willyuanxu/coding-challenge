@@ -1,17 +1,8 @@
 from elasticsearch import Elasticsearch, TransportError
 from elasticsearch_dsl import Search
+from utils import calc_location, test_response
 
 def search_with_L2_norm(emotion_profile):
-    params = {
-                "anger": emotion_profile['anger'],
-                "disgust": emotion_profile['disgust'],
-                "sadness": emotion_profile['sadness'],
-                "surprise": emotion_profile['surprise'],
-                "fear": emotion_profile['fear'],
-                "trust": emotion_profile['trust'],
-                "joy": emotion_profile['joy'],
-                "anticipation": emotion_profile['anticipation'],
-            }
 
     # painless script for calculating sum of square error
     script_field = {
@@ -24,7 +15,7 @@ def search_with_L2_norm(emotion_profile):
             return sum_sq_err
         """,
         "params": {
-            "input": params
+            "input": emotion_profile
         }
     }
 
@@ -45,16 +36,38 @@ def search_with_L2_norm(emotion_profile):
 
     try:
         response = s.execute()
+        test_response(emotion_profile, response)
     except TransportError as e:
         print(e.info)
 
-    # print(response.hits.hits)
-    for hit in response.hits.hits:
-        profile = hit['_source']['emotion_profile']
-        sum_sq_err = 0
-        for key in params:
-            sum_sq_err += (params[key] - profile[key])**2
-        print(sum_sq_err)
 
 
-# search_with_L2_norm({"anger":40, "disgust": 20,"sadness": 10, "surprise": 90, "fear": 10, "trust": 40, "joy": 30, "anticipation": 10})
+def search_with_geodistance(emotion_profile):
+    # sort field of query
+    query_x, query_y = calc_location(emotion_profile)
+    sort_field = {
+        "_geo_distance": {
+            "location": {
+                "lat": query_x,
+                "lon": query_y
+            },
+            "order": "asc",
+            "unit": "km",
+            "distance_type": "plane"
+        }
+    }
+    client = Elasticsearch()
+    s = Search(using=client, index="songs").sort(sort_field)
+    # specify match_all query and set size to max 100
+    s.query("match_all")
+    s = s[:100]
+    try:
+        response = s.execute()
+        test_response(emotion_profile, response)
+
+    except TransportError as e:
+        print(e.info)
+
+profile = {"anger":40, "disgust": 20,"sadness": 10, "surprise": 90, "fear": 10, "trust": 40, "joy": 30, "anticipation": 10}
+# search_with_L2_norm(profile)
+search_with_geodistance(profile)

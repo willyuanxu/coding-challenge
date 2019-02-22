@@ -19,7 +19,7 @@ emotion_scaler = {
 
 # define index structure with a geopoint
 index_structure = {
-  "mapping": {
+  "mappings": {
     "doc": {
       "properties": {
         "artist": {
@@ -99,7 +99,7 @@ def calc_location(emotion_profile):
         x_scaler, y_scaler = emotion_scaler[emotion]
         x_coord += emotion_profile[emotion] * x_scaler
         y_coord += emotion_profile[emotion] * y_scaler
-    return x_coord, y_coord
+    return round(x_coord/2, 2), round(y_coord/2, 2)
 
 def load_data():
     csv_file = open('data.csv', 'r')
@@ -112,7 +112,7 @@ def load_data():
 
     # create index structure
     es = Elasticsearch()
-    es.indices.create(index="songs", body=index_structure, ignore=400)
+    es.indices.create(index='songs', body=index_structure, ignore=400)
 
     # make lrc field json, assign emotion profile to each doc, and index the doc
     id_counter = 1
@@ -121,14 +121,19 @@ def load_data():
         emotion_profile =  generate_random_emotion_profile()
         doc['emotion_profile'] = emotion_profile
         x_coord, y_coord = calc_location(emotion_profile)
-        doc['location'] = {
-            "lat": x_coord,
-            "lon": y_coord
-        }
+        doc['location'] = str(x_coord) + "," + str(y_coord)
         res = es.index(index="songs", doc_type="doc", id=id_counter, body=doc)
         id_counter += 1
 
+def test_response(input, response):
+    # print(response.hits.hits)
+    for hit in response.hits.hits:
+        profile = hit['_source']['emotion_profile']
+        sum_sq_err = 0
+        for key in input:
+            sum_sq_err += (input[key] - profile[key]) ** 2
+        print(sum_sq_err)
 
-
+load_data()
 
 
