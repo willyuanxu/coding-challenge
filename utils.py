@@ -4,6 +4,7 @@ import csv
 import random
 
 emotion_list = ["anger", "disgust", "sadness", "surprise", "fear", "trust", "joy", "anticipation"]
+
 # scaler for emotions 45 degree from axis
 scaler = 1 / (2**0.5)
 emotion_scaler = {
@@ -17,7 +18,7 @@ emotion_scaler = {
     "anticipation": (-scaler, scaler)
 }
 
-# define index structure with a geopoint
+# define index structure
 index_structure = {
   "mappings": {
     "doc": {
@@ -64,7 +65,7 @@ index_structure = {
           "properties": {
             "line": {
               "type": "text",
-              "analyzer": "standard"
+              "analyzer": "english"
             },
             "lrc_timestamp": {
               "type": "text"
@@ -76,7 +77,7 @@ index_structure = {
         },
         "title": {
           "type": "text",
-          "analyzer": "standard"
+          "analyzer": "english"
         }
       }
     }
@@ -86,6 +87,9 @@ index_structure = {
     "number_of_replicas": 1
   }
 }
+
+# last song from data is saved for testing prediction
+predict_doc = None
 
 # create a random emotion profile in JSON format
 def generate_random_emotion_profile():
@@ -114,18 +118,30 @@ def load_data():
     es = Elasticsearch()
     es.indices.create(index='songs', body=index_structure, ignore=400)
 
-    # make lrc field json, assign emotion profile to each doc, and index the doc
+
+    ##  and index the doc
     id_counter = 1
     for doc in jsons:
+        # make lrc field json
         doc['lrc'] = json.loads(doc['lrc'])
-        emotion_profile =  generate_random_emotion_profile()
-        doc['emotion_profile'] = emotion_profile
-        x_coord, y_coord = calc_location(emotion_profile)
-        doc['location'] = str(x_coord) + "," + str(y_coord)
-        res = es.index(index="songs", doc_type="doc", id=id_counter, body=doc)
-        id_counter += 1
-    print("data loaded")
+        if id_counter != 99:
+            # assign emotion profile to each doc
+            emotion_profile = generate_random_emotion_profile()
+            doc['emotion_profile'] = emotion_profile
 
+            # assign coordinate to each doc
+            x_coord, y_coord = calc_location(emotion_profile)
+            doc['location'] = str(x_coord) + "," + str(y_coord)
+            # index the doc
+            res = es.index(index="songs", doc_type="doc", id=id_counter, body=doc)
+            id_counter += 1
+        else:
+            print("data loaded")
+            # save the last song for testing prediction
+            return doc
+
+
+# list L2 similarity score query response
 def test_response(input, response):
     # print(response.hits.hits)
     for hit in response.hits.hits:
@@ -134,6 +150,5 @@ def test_response(input, response):
         for key in input:
             sum_sq_err += (input[key] - profile[key]) ** 2
         print(sum_sq_err)
-
 
 
