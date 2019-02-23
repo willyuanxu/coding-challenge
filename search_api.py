@@ -1,7 +1,8 @@
 from elasticsearch import Elasticsearch, TransportError
 from elasticsearch_dsl import Search
-from utils import calc_location, test_response
+from utils import calc_location
 
+# this implementation does not work as it causes runtime error on elasticsearch
 def search_with_L2_norm(emotion_profile):
 
     # painless script for calculating sum of square error
@@ -39,9 +40,10 @@ def search_with_L2_norm(emotion_profile):
         return response
     except TransportError as e:
         print(e.info)
+        exit()
 
 
-
+# using geo_id as a way to search
 def search_with_geodistance(emotion_profile):
     # sort field of query
     query_x, query_y = calc_location(emotion_profile)
@@ -66,3 +68,4 @@ def search_with_geodistance(emotion_profile):
         return response 
     except TransportError as e:
         print(e.info)
+        exit()

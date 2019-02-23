@@ -88,9 +88,6 @@ index_structure = {
   }
 }
 
-# last song from data is saved for testing prediction
-predict_doc = None
-
 # create a random emotion profile in JSON format
 def generate_random_emotion_profile():
     profile = {emotion_list[i]: random.randint(0,100) for i in range(len(emotion_list))}
@@ -105,8 +102,8 @@ def calc_location(emotion_profile):
         y_coord += emotion_profile[emotion] * y_scaler
     return round(x_coord/2, 2), round(y_coord/2, 2)
 
-def load_data():
-    csv_file = open('data.csv', 'r')
+def load_data(data):
+    csv_file = open(data, 'r')
     reader = csv.DictReader(csv_file)
     fields = reader.fieldnames
     # load all docs into a list
@@ -151,4 +148,8 @@ def test_response(input, response):
             sum_sq_err += (input[key] - profile[key]) ** 2
         print(sum_sq_err)
 
-
+# round emotion profile to whole numbers
+def round_emotion_profile(profile):
+    for emotion in emotion_list:
+        profile[emotion] = round(profile[emotion])
+    return profile
