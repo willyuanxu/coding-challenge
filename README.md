@@ -16,6 +16,7 @@
 * No information loss, widely accepted similarity metric 
 * require calculation on the fly, require index full scan, expensive 
 * Runtime exception on script
+* support for [dense_vector datatype](https://www.elastic.co/guide/en/elasticsearch/reference/master/dense-vector.html) is likely to be supported in the future, which can be used for [scoring based on cosine similarity](https://www.elastic.co/guide/en/elasticsearch/reference/master/query-dsl-script-score-query.html#vector-functions)
 
 **Approach 2** (_implemented_): spatial indexing - think of Wheel of Emotion as a cartesian coordinate system centered at (0, 0), and assign x, y value to any particular song. 
 * The coordinate of each emotion is determined by its intensity (radius), and where the emotion is on the wheel of emotion (angle). The coordinate of a song is calculated by adding up the coordinate of each emotion. 
@@ -31,7 +32,6 @@
 
 **Approach 4**: Building on top of the cartesian coordinate system outlined in approach 2, we can represent each song’s emotion profile as an octagon on the coordinate system. Songs with maximum overlap and minimum disjoint regions to the input would be more optimal 
 * Elasticsearch supports indexing of shapes with geo_shape, however sorting results based on overlap is not yet supported 
-* use external plugins that support K nearest neighbor search
 * Use locality-sensitive hashing (LSH) to hash emotional profile, allowing elasticsearch to index and query efficiently
 * Example of such plugins: [ElastiK Nearest Neighbors – Insight Data](https://blog.insightdatascience.com/elastik-nearest-neighbors-4b1f6821bd62)
 
