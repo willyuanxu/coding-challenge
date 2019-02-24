@@ -65,7 +65,8 @@ index_structure = {
           "properties": {
             "line": {
               "type": "text",
-              "analyzer": "english"
+              "analyzer": "english",
+              "search_analyzer": "english"
             },
             "lrc_timestamp": {
               "type": "text"
