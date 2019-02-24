@@ -5,18 +5,18 @@
 * How to consider multiple emotions and rank songs accordingly 
 * How to search efficiently as database scale 
 ##### Assumptions:
-* Database already populated with songs and its emotion profile
+* Database already populated with songs and their emotion profile
 * Songs are more likely to be emotionally consistent than inconsistent 
-* Users are unlikely to try to convey strong conflicting emotions  
+* Users are unlikely to try to convey strong and conflicting emotions (e.g. joy 100 + sadness 100)  
 ##### Objectives:
 * Well defined index structure to allow easy and efficient queries 
-* Well-formed query to allow accurate query results 
+* Well formed query to allow accurate query results 
 ##### Ideas:
 **Approach 1** (_implemented_): Sort result by decreasing order of song and input’s sum of square error/L2 Norm 
 * No information loss, widely accepted similarity metric 
 * require calculation on the fly, require index full scan, expensive 
 * Runtime exception on script
-* support for [dense_vector datatype](https://www.elastic.co/guide/en/elasticsearch/reference/master/dense-vector.html) is likely to be supported in the future, which can be used for [scoring based on cosine similarity](https://www.elastic.co/guide/en/elasticsearch/reference/master/query-dsl-script-score-query.html#vector-functions)
+* support for [dense_vector datatype](https://www.elastic.co/guide/en/elasticsearch/reference/master/dense-vector.html) is likely to be coming to Elasticsearch in the future, which can be used for [scoring based on cosine similarity](https://www.elastic.co/guide/en/elasticsearch/reference/master/query-dsl-script-score-query.html#vector-functions)
 
 **Approach 2** (_implemented_): spatial indexing - think of Wheel of Emotion as a cartesian coordinate system centered at (0, 0), and assign x, y value to any particular song. 
 * The coordinate of each emotion is determined by its intensity (radius), and where the emotion is on the wheel of emotion (angle). The coordinate of a song is calculated by adding up the coordinate of each emotion. 
@@ -47,7 +47,7 @@
 - - - -
 #####  Key challenges:
 * How to use each lyrical line as a cue for the new lyric’s emotion profile 
-* How to use existing songs’ emotion profile and their similarity to new lyrics to deduce an emotion profile for the new song 
+* How to use existing songs’ emotion profile and their similarity to new lyrics to deduce an emotion profile for new lyrics
 
 ##### Assumptions:
 * Database already populated with songs along with their lyrics and accurate emotion profile 
