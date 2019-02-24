@@ -30,6 +30,7 @@
 * Sort the N results using approach 1, eliminate the need to run L2 Norm on entire database
 
 **Approach 4**: Building on top of the cartesian coordinate system outlined in approach 2, we can represent each song’s emotion profile as an octagon on the coordinate system. Songs with maximum overlap and minimum disjoint regions to the input would be more optimal 
+* Elasticsearch supports indexing of shapes with geo_shape, however sorting results based on overlap is not yet supported 
 * use external plugins that support K nearest neighbor search
 * Use locality-sensitive hashing (LSH) to hash emotional profile, allowing elasticsearch to index and query efficiently
 * Example of such plugins: [ElastiK Nearest Neighbors – Insight Data](https://blog.insightdatascience.com/elastik-nearest-neighbors-4b1f6821bd62)

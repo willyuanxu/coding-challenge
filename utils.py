@@ -141,7 +141,7 @@ def load_data(data):
 # list L2 similarity score query response
 def test_response(input, response):
     # print(response.hits.hits)
-    for hit in response.hits.hits:
+    for hit in response['hits']['hits']:
         profile = hit['_source']['emotion_profile']
         sum_sq_err = 0
         for key in input:
