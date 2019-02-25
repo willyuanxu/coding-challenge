@@ -1,4 +1,4 @@
-##Note:
+## Note:
 * Program developed using Python 3.7 and Elasticsearch 6.6.0
 * Dependencies outlined in requirements.txt 
 * Make sure Elasticsearch is running before testing
