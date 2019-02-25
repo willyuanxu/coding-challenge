@@ -116,7 +116,6 @@ def load_data(data):
     es = Elasticsearch()
     es.indices.create(index='songs', body=index_structure, ignore=400)
 
-
     ##  and index the doc
     id_counter = 1
     for doc in jsons:
