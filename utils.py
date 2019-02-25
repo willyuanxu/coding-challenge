@@ -91,11 +91,18 @@ index_structure = {
 
 # create a random emotion profile in JSON format
 def generate_random_emotion_profile():
+    """
+    :return: dict of emotion profile
+    """
     profile = {emotion_list[i]: random.randint(0,100) for i in range(len(emotion_list))}
     return profile
 
 # calculate the location tuple given emotion profile
 def calc_location(emotion_profile):
+    """
+    :param emotion_profile: dict of emotion proifle
+    :return: tuple of floats
+    """
     x_coord, y_coord = 0, 0
     for emotion in emotion_list:
         x_scaler, y_scaler = emotion_scaler[emotion]
@@ -104,6 +111,10 @@ def calc_location(emotion_profile):
     return round(x_coord/2, 2), round(y_coord/2, 2)
 
 def load_data(data):
+    """
+    :param data: str
+    :return: dict/json of one doc
+    """
     csv_file = open(data, 'r')
     reader = csv.DictReader(csv_file)
     fields = reader.fieldnames
@@ -140,6 +151,11 @@ def load_data(data):
 
 # list L2 similarity score query response
 def test_response(input, response):
+    """
+    :param input: dict of emotion profile
+    :param response: elasticsearch response
+    :return: None
+    """
     # print(response.hits.hits)
     for hit in response['hits']['hits']:
         profile = hit['_source']['emotion_profile']
@@ -150,6 +166,18 @@ def test_response(input, response):
 
 # round emotion profile to whole numbers
 def round_emotion_profile(profile):
+    """
+    :param profile: dict of emotion profile
+    :return: dict of emotion profile
+    """
     for emotion in emotion_list:
         profile[emotion] = round(profile[emotion])
     return profile
+
+def print_top_ten_response(response):
+    counter = 0
+    for hit in response['hits']['hits']:
+        print("{} : {}".format(hit['_source']['title'], hit['_source']['emotion_profile']))
+        counter += 1
+        if counter == 10:
+            return

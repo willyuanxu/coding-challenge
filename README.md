@@ -1,3 +1,11 @@
+##Note:
+* Program developed using Python 3.7 and Elasticsearch 6.6.0
+* Dependencies outlined in requirements.txt 
+* Make sure Elasticsearch is running before testing
+* To test functions run main.py
+* Program uses randomly generated emotion profiles with python's builtin PRNG, using real data should yield better results 
+
+
 ## Task 1: searching 
 **Given an emotion profile, return songs that match emotion profile in decreasing order**
 - - - -
@@ -16,7 +24,7 @@
 * No information loss, widely accepted similarity metric 
 * require calculation on the fly, require index full scan, expensive 
 * Runtime exception on script
-* support for [dense_vector datatype](https://www.elastic.co/guide/en/elasticsearch/reference/master/dense-vector.html) is likely to be coming to Elasticsearch in the future, which can be used for [scoring based on cosine similarity](https://www.elastic.co/guide/en/elasticsearch/reference/master/query-dsl-script-score-query.html#vector-functions)
+* support for [dense_vector datatype](https://www.elastic.co/guide/en/elasticsearch/reference/master/dense-vector.html) is coming to Elasticsearch 7.0 (in beta), which can be used for [scoring based on cosine similarity](https://www.elastic.co/guide/en/elasticsearch/reference/master/query-dsl-script-score-query.html#vector-functions)
 
 **Approach 2** (_implemented_): spatial indexing - think of Wheel of Emotion as a cartesian coordinate system centered at (0, 0), and assign x, y value to any particular song. 
 * The coordinate of each emotion is determined by its intensity (radius), and where the emotion is on the wheel of emotion (angle). The coordinate of a song is calculated by adding up the coordinate of each emotion. 

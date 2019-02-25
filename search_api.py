@@ -4,6 +4,10 @@ from utils import calc_location
 
 # this implementation does not work as it causes runtime error on elasticsearch
 def search_with_L2_norm(emotion_profile):
+    """
+    :param emotion_profile: dict of emotion profile
+    :return: elasticsearch response
+    """
 
     # painless script for calculating sum of square error
     script_field = {
@@ -45,6 +49,10 @@ def search_with_L2_norm(emotion_profile):
 
 # using geo_id as a way to search
 def search_with_geodistance(emotion_profile):
+    """
+    :param emotion_profile: dict of emotion profile
+    :return: elasticsearch response
+    """
     # sort field of query
     query_x, query_y = calc_location(emotion_profile)
     sort_field = {

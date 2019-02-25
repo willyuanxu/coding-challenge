@@ -6,6 +6,9 @@ from threading import Thread
 
 # aux function to help generate an empty emotion profile
 def generate_empty_emotion_profile():
+    """
+    :return: dict of emotion profile
+    """
     emotion_profile = {}
     for emotion in emotion_list:
         emotion_profile[emotion] = 0
@@ -14,6 +17,10 @@ def generate_empty_emotion_profile():
 
 # aux function to generate emotion profile from a particular elasticsearch query response
 def generate_emotion_profile_from_response(response):
+    """
+    :param response: elasticsearch response
+    :return:  dict of emotion profile
+    """
     # initialize emotion profile for this particular lyrical line
     emotion_profile = generate_empty_emotion_profile()
 
@@ -43,7 +50,10 @@ def predict_with_search_relevance(lyrics):
         In this implementation X==5. if X is sufficiently large potentially need generate profile
         for each lyric line on a separate thread
     emotion profile of whole song is the average of emotion profiles of each lyric line
+    :param lyrics: list[str] of lyrics
+    :return: dict of emotion profile
     """
+
     # initialize empty emotion profile
     emotion_profile = generate_empty_emotion_profile()
 
@@ -82,6 +92,8 @@ def predict_with_search_relevance_avg(lyrics):
     generate an emotion profile with similar approach as predict_with_search_relevance, but instead
     use the entire song's lyrics in one query, then average the result out with the emotion profile
     returned from predict_with_search_relevance
+    :param lyrics: list[str] of lyrics
+    :return: dict of emotion profile
     """
     emotion_profile_lrc_que = Queue()  # use a queue to save response from thread
     # get emotion profile with first approach on a thread
